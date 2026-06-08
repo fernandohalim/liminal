@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #0e0c0b;
+  --bone: #f0ebe3;
+  --copper: #b87333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--void);
+}
+
+body {
+  background: var(--void);
+  color: var(--bone);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--copper);
+  color: var(--void);
+}
+
+/* hide native cursor on devices with a pointer; restore on touch */
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: none;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #0e0c0b;
+}
+::-webkit-scrollbar-thumb {
+  background: #221f1c;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b87333;
+}
+
+/* vertical writing helper */
+.vertical-rl {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
