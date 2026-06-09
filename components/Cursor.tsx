@@ -9,10 +9,8 @@ export default function Cursor() {
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-
   const ringX = useSpring(x, { stiffness: 220, damping: 28, mass: 0.6 });
   const ringY = useSpring(y, { stiffness: 220, damping: 28, mass: 0.6 });
-
   const raf = useRef<number | null>(null);
 
   useEffect(() => {
@@ -28,7 +26,6 @@ export default function Cursor() {
         raf.current = null;
       });
     };
-
     const over = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
       setHovering(!!t.closest("a, button, [data-cursor='hover']"));
@@ -46,22 +43,22 @@ export default function Cursor() {
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[110]">
-      {/* dot */}
       <motion.div
-        className="absolute h-1.5 w-1.5 rounded-full bg-copper"
+        className="absolute h-1 w-1 rounded-full bg-copper"
         style={{ x, y, translateX: "-50%", translateY: "-50%" }}
       />
-      {/* ring */}
+      {/* viewfinder: ring that morphs into a rotated square on hover */}
       <motion.div
-        className="absolute rounded-full border border-bone/40 mix-blend-difference"
+        className="absolute border border-bone/40 mix-blend-difference"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{
-          width: hovering ? 56 : 28,
-          height: hovering ? 56 : 28,
-          opacity: hovering ? 0.9 : 0.5,
+          width: hovering ? 50 : 26,
+          height: hovering ? 50 : 26,
+          borderRadius: hovering ? "1px" : "50%",
+          rotate: hovering ? 45 : 0,
           borderColor: hovering ? "#B87333" : "rgba(240,235,227,0.4)",
         }}
-        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+        transition={{ type: "spring", stiffness: 250, damping: 22 }}
       />
     </div>
   );

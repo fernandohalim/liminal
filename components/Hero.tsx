@@ -7,188 +7,227 @@ import {
   useSpring,
   useScroll,
   useTransform,
+  type MotionValue,
 } from "framer-motion";
-import NameCycle from "./NameCycle";
 
-const WORD = "LIMINAL".split("");
+// PLACEHOLDER — replace later. Wide, atmospheric, threshold-like.
+const HERO_IMG =
+  "https://picsum.photos/seed/liminal-threshold/2400/1500?grayscale";
 
-// each letter enters from an alternating offset — "broken lettering" settling
-const letterVariants = {
-  hidden: (i: number) => ({
-    y: i % 2 === 0 ? "0.7em" : "-0.7em",
-    x: (i - 3) * 6,
-    opacity: 0,
-    rotate: i % 2 === 0 ? 6 : -6,
-    filter: "blur(10px)",
-  }),
-  show: {
-    y: 0,
-    x: 0,
-    opacity: 1,
-    rotate: 0,
-    filter: "blur(0px)",
-  },
+const TITLE = "liminal".split("");
+
+const letterVar = {
+  hidden: { y: "0.85em", opacity: 0, filter: "blur(18px)", skewY: 7 },
+  show: { y: 0, opacity: 1, filter: "blur(0px)", skewY: 0 },
 };
+
+function Letter({
+  char,
+  index,
+  total,
+  spread,
+}: {
+  char: string;
+  index: number;
+  total: number;
+  spread: MotionValue<number>;
+}) {
+  const center = (total - 1) / 2;
+  const factor = index - center;
+  const x = useTransform(spread, [0, 1], [0, factor * 48]); // letters fly apart on scroll
+
+  return (
+    <motion.span
+      variants={letterVar}
+      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+      style={{ x, display: "inline-block" }}
+    >
+      <motion.span
+        className="inline-block"
+        animate={{ y: [0, -10, 0] }}
+        transition={{
+          repeat: Infinity,
+          duration: 5,
+          ease: "easeInOut",
+          delay: index * 0.28,
+        }}
+      >
+        {char}
+      </motion.span>
+    </motion.span>
+  );
+}
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
 
-  // mouse parallax
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20 });
+  // pointer → springed normalized values
+  const mvx = useMotionValue(0);
+  const mvy = useMotionValue(0);
+  const px = useSpring(mvx, { stiffness: 50, damping: 18 });
+  const py = useSpring(mvy, { stiffness: 50, damping: 18 });
 
-  const slow = useTransform(sx, (v) => v * 0.6);
-  const slowY = useTransform(sy, (v) => v * 0.6);
-  const fast = useTransform(sx, (v) => v * -1.4);
-  const fastY = useTransform(sy, (v) => v * -1.4);
+  const gx = useTransform(px, (v) => v * 40);
+  const gy = useTransform(py, (v) => v * 26);
+  const tiltY = useTransform(px, (v) => v * -10);
+  const tiltX = useTransform(py, (v) => v * 8);
+  const credX = useTransform(px, (v) => v * -22);
+  const imgPX = useTransform(px, (v) => v * -16);
 
-  const handleMove = (e: React.MouseEvent) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    mx.set(((e.clientX - r.left) / r.width - 0.5) * 40);
-    my.set(((e.clientY - r.top) / r.height - 0.5) * 40);
-  };
-
-  // scroll-driven exit
+  // scroll
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const heroFade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const spread = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const imgY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const overlayFade = useTransform(scrollYProgress, [0, 0.9], [1, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const titleBlur = useTransform(
+    scrollYProgress,
+    [0, 0.8],
+    ["blur(0px)", "blur(7px)"]
+  );
+
+  const onMove = (e: React.MouseEvent) => {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    mvx.set((e.clientX - r.left) / r.width - 0.5);
+    mvy.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const onLeave = () => {
+    mvx.set(0);
+    mvy.set(0);
+  };
 
   return (
     <section
       ref={ref}
-      onMouseMove={handleMove}
-      className="relative flex min-h-[100svh] w-full flex-col justify-between overflow-hidden px-5 pb-8 pt-28 md:px-10 md:pt-32"
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden"
     >
-      {/* breathing copper aura, parallaxed */}
+      {/* BACKGROUND IMAGE — Ken Burns + parallax + duotone + light sweep */}
       <motion.div
-        aria-hidden
-        style={{ x: slow, y: slowY }}
-        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 animate-breathe rounded-full bg-[radial-gradient(circle,rgba(184,115,51,0.22),transparent_65%)] blur-2xl"
-      />
-
-      {/* faint vertical guide lines */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden md:block">
-        <div className="absolute left-[18%] top-0 h-full w-px bg-bone/[0.04]" />
-        <div className="absolute left-[82%] top-0 h-full w-px bg-bone/[0.04]" />
-      </div>
-
-      {/* TOP: overline + index */}
-      <motion.div
-        style={{ opacity: heroFade }}
-        className="flex items-start justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-dust"
+        style={{ x: imgPX }}
+        className="absolute inset-0 -z-10 overflow-hidden"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-        >
-          <span className="text-copper">(01)</span> Design · Motion · UI/UX
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.8 }}
-          className="text-right leading-relaxed"
-        >
-          EST. MMXXVI
-          <br />
-          <span className="text-bone/60">N 00.00 — W 00.00</span>
-        </motion.div>
-      </motion.div>
-
-      {/* CENTER STACK */}
-      <motion.div
-        style={{ y: heroY, opacity: heroFade }}
-        className="relative flex flex-1 flex-col justify-center"
-      >
-        {/* working-name cycle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mb-4 pl-1 font-mono text-xs uppercase tracking-[0.3em] text-dust md:mb-6"
-        >
-          <span className="text-bone/40">from a shortlist of thirteen — </span>
-          <NameCycle />
-        </motion.p>
-
-        {/* GIANT WORDMARK */}
-        <motion.h1
-          aria-label="LIMINAL"
-          initial="hidden"
-          animate="show"
-          transition={{ delayChildren: 1.1, staggerChildren: 0.06 }}
-          style={{ x: fast, y: fastY }}
-          className="font-struct leading-[0.8] tracking-tight text-bone"
-        >
-          <span className="flex flex-wrap">
-            {WORD.map((ch, i) => (
-              <motion.span
-                key={i}
-                custom={i}
-                variants={letterVariants}
-                transition={{ type: "spring", stiffness: 120, damping: 14 }}
-                className={`inline-block text-[24vw] leading-[0.78] md:text-[20vw] lg:text-[18vw] ${
-                  i === 3 ? "text-copper" : ""
-                }`}
-              >
-                {ch}
-              </motion.span>
-            ))}
-          </span>
-        </motion.h1>
-
-        {/* threshold line that draws across */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 1.9, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="my-6 h-px w-full origin-left bg-gradient-to-r from-copper via-rust to-transparent md:my-8"
+        <motion.img
+          src={HERO_IMG}
+          alt=""
+          initial={{ scale: 1.3, opacity: 0 }}
+          animate={{ scale: 1.14, opacity: 1 }}
+          transition={{ duration: 2.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ y: imgY }}
+          className="h-full w-full object-cover grayscale"
         />
-
-        {/* cormorant statement */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.1, duration: 1 }}
-          className="max-w-2xl self-end text-right font-display text-3xl font-light italic leading-tight text-bone/90 md:text-5xl"
-        >
-          Some things don’t have a name yet.
-          <span className="mt-2 block text-copper">We work there.</span>
-        </motion.p>
+        <div className="absolute inset-0 bg-copper/15 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-rust/10 mix-blend-color" />
+        <div className="absolute inset-0 bg-gradient-to-t from-void via-void/70 to-void/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-void/85 via-transparent to-void/30" />
+        <motion.div
+          className="absolute inset-y-0 -left-1/3 w-1/3 skew-x-12 bg-gradient-to-r from-transparent via-bone/10 to-transparent"
+          animate={{ x: ["0vw", "175vw"] }}
+          transition={{
+            repeat: Infinity,
+            duration: 7,
+            ease: "easeInOut",
+            repeatDelay: 5,
+          }}
+        />
       </motion.div>
 
-      {/* BOTTOM: tagline + scroll cue */}
+      {/* TOP CREDITS */}
       <motion.div
-        style={{ opacity: heroFade }}
-        className="flex items-end justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-dust"
+        style={{ opacity: overlayFade, x: credX }}
+        className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-7 font-mono text-[11px] uppercase tracking-[0.3em] text-bone/70 md:p-14"
       >
         <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.4, duration: 0.8 }}
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 1 }}
         >
-          Nothing is finished here.
+          Design studio
         </motion.span>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.4, duration: 0.8 }}
-          className="flex flex-col items-center gap-2"
+        <motion.span
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 1 }}
+          className="text-right leading-relaxed"
         >
-          <span>Scroll</span>
-          <motion.span
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-            className="block h-8 w-px bg-gradient-to-b from-copper to-transparent"
-          />
+          Est. MMXXVI
+          <br />
+          <span className="text-bone/40">the in-between</span>
+        </motion.span>
+      </motion.div>
+
+      {/* TITLE BLOCK */}
+      <motion.div
+        style={{ y: titleY }}
+        className="relative z-10 px-7 pb-12 md:px-14 md:pb-20"
+      >
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85, duration: 1 }}
+          className="mb-5 font-mono text-xs uppercase tracking-[0.45em] text-copper"
+        >
+          A studio between states
+        </motion.p>
+
+        <div style={{ perspective: 900 }}>
+          <motion.h1
+            aria-label="liminal"
+            initial="hidden"
+            animate="show"
+            transition={{ delayChildren: 0.7, staggerChildren: 0.08 }}
+            style={{
+              x: gx,
+              y: gy,
+              rotateX: tiltX,
+              rotateY: tiltY,
+              filter: titleBlur,
+              transformStyle: "preserve-3d",
+            }}
+            className="flex font-display text-[20vw] font-light italic leading-[0.82] tracking-tight text-bone md:text-[15vw] lg:text-[13vw]"
+          >
+            {TITLE.map((c, i) => (
+              <Letter
+                key={i}
+                char={c}
+                index={i}
+                total={TITLE.length}
+                spread={spread}
+              />
+            ))}
+          </motion.h1>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.7, duration: 1 }}
+          className="mt-9 flex flex-col gap-4 border-t border-bone/15 pt-5 font-mono text-[11px] uppercase tracking-[0.25em] text-bone/55 md:flex-row md:items-end md:justify-between"
+        >
+          <span className="max-w-sm leading-relaxed">
+            UI/UX · Web · Illustration · Motion — for the space between the
+            expected and the unimagined.
+          </span>
+          <span className="text-bone/40">Nothing is finished here.</span>
         </motion.div>
+      </motion.div>
+
+      {/* SCROLL CUE */}
+      <motion.div
+        style={{ opacity: overlayFade }}
+        className="pointer-events-none absolute bottom-7 right-7 hidden flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-bone/50 md:flex md:right-14"
+      >
+        Scroll
+        <motion.span
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          className="block h-8 w-px bg-gradient-to-b from-copper to-transparent"
+        />
       </motion.div>
     </section>
   );

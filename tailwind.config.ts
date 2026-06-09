@@ -18,12 +18,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-cormorant)", "serif"],
-        struct: ["var(--font-bebas)", "sans-serif"],
         mono: ["var(--font-dm-mono)", "monospace"],
-      },
-      letterSpacing: {
-        brand: "0.35em",
-        ultra: "0.5em",
       },
       keyframes: {
         grain: {
@@ -38,14 +33,9 @@ const config: Config = {
           "80%": { transform: "translate(3%, 35%)" },
           "90%": { transform: "translate(-10%, 10%)" },
         },
-        breathe: {
-          "0%, 100%": { opacity: "0.35", transform: "scale(1)" },
-          "50%": { opacity: "0.6", transform: "scale(1.08)" },
-        },
       },
       animation: {
         grain: "grain 8s steps(10) infinite",
-        breathe: "breathe 9s ease-in-out infinite",
       },
     },
   },

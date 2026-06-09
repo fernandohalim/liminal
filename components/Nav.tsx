@@ -1,39 +1,47 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Magnetic } from "./Kit";
 
 export default function Nav() {
   return (
     <motion.header
-      initial={{ opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, duration: 0.8 }}
-      className="fixed inset-x-0 top-0 z-50 mix-blend-difference"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.9, duration: 1.2 }}
+      className="fixed inset-x-0 top-0 z-[95] mix-blend-difference"
     >
-      <nav className="flex items-center justify-between px-5 py-5 md:px-10">
-        <a
-          href="#top"
-          className="font-struct text-xl tracking-brand text-bone transition-opacity hover:opacity-60"
-        >
-          LIMINAL
-        </a>
-
-        <div className="hidden gap-8 font-mono text-[11px] uppercase tracking-[0.25em] text-bone md:flex">
-          <a href="#about" className="transition-colors hover:text-copper">
-            About
-          </a>
-          <span className="text-bone/30">Work — soon</span>
+      <nav className="flex items-center justify-between px-6 py-5 md:px-12">
+        {/* TODO: replace with the real liminal logo (SVG/PNG) */}
+        <Magnetic strength={0.25} className="inline-block">
           <a
-            href="#about"
-            className="transition-colors hover:text-copper"
-            data-cursor="hover"
+            href="#top"
+            className="font-display text-2xl font-light italic lowercase tracking-wide text-bone transition-opacity hover:opacity-60"
           >
-            Let’s talk →
+            liminal
           </a>
+        </Magnetic>
+
+        <div className="hidden items-center gap-10 font-mono text-[11px] uppercase tracking-[0.3em] text-bone md:flex">
+          <Magnetic strength={0.4} className="inline-block">
+            <a href="#about" className="block transition-colors hover:text-copper">
+              About
+            </a>
+          </Magnetic>
+          <span className="text-bone/30">Work — soon</span>
+          <Magnetic strength={0.4} className="inline-block">
+            <a
+              href="#about"
+              data-cursor="hover"
+              className="block transition-colors hover:text-copper"
+            >
+              Contact →
+            </a>
+          </Magnetic>
         </div>
 
-        <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-bone md:hidden">
-          ☰
+        <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-bone md:hidden">
+          Menu
         </span>
       </nav>
     </motion.header>

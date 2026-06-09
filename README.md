@@ -1,37 +1,20 @@
-# LIMINAL — studio site (hero + philosophy)
+# LIMINAL — studio site (A24-style redesign)
 
-Built with Next.js 14, TypeScript, Tailwind CSS and Framer Motion.
+Next.js 14 · TypeScript · Tailwind · Framer Motion.
+Fonts: Cormorant Garamond + DM Mono (Bebas removed).
 
-## Run it (you don't need to know how to code)
+## Run it
+1. Install Node.js (LTS) from https://nodejs.org
+2. Open a terminal (macOS: Terminal · Windows: PowerShell)
+3. Type `cd ` then drag the `liminal` folder in, press Enter
+4. `npm install`   (one time)
+5. `npm run dev`   then open http://localhost:3000
+Keep internet on for the first run so the fonts download.
 
-1. Install Node.js (the engine that runs this). Get the "LTS" version
-   from https://nodejs.org and click through the installer.
-
-2. Open a terminal:
-   - macOS: open the "Terminal" app
-   - Windows: open "PowerShell"
-
-3. Go into this folder. Type `cd ` (with a space), then drag the
-   `liminal` folder onto the terminal window and press Enter.
-
-4. Install the building blocks (one time only):
-
-       npm install
-
-5. Start the live preview:
-
-       npm run dev
-
-6. Open http://localhost:3000 in your browser. Edits save live.
-
-To stop the preview: click the terminal and press Ctrl + C.
-
-## Where things live
-- `components/Hero.tsx` — the hero (name-cycle, giant wordmark, parallax)
-- `components/About.tsx` — manifesto + philosophy
-- `components/Cursor.tsx` / `Grain.tsx` — custom cursor + film grain
-- `tailwind.config.ts` — the Liminal colors and fonts
-- `app/layout.tsx` — loads the three brand fonts
-
-Note: the fonts download automatically the first time you run it,
-so keep the internet on for that first `npm run dev`.
+## Placeholder images (picsum) — replace these
+All three are remote picsum URLs. Swap them for your own art:
+put files in a `/public` folder and change the URL to e.g. "/hero.jpg".
+- components/Hero.tsx      HERO_IMG   — wide, atmospheric "threshold" shot
+- components/QuoteBand.tsx QUOTE_IMG  — between motion & stillness
+- components/About.tsx     ABOUT_IMG  — portrait, textural studio detail
+The copper duotone + grain are applied in CSS, so any photo will sit in-palette.

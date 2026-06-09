@@ -1,19 +1,23 @@
-import Grain from "@/components/Grain";
-import Cursor from "@/components/Cursor";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
-import Marquee from "@/components/Marquee";
+import Ticker from "@/components/Ticker";
+import QuoteBand from "@/components/QuoteBand";
+import KineticBand from "@/components/KineticBand";
 import About from "@/components/About";
+import Services from "@/components/Services";
+import Work from "@/components/Work";
 
 export default function Home() {
   return (
     <main id="top" className="relative bg-void">
-      <Grain />
-      <Cursor />
       <Nav />
       <Hero />
-      <Marquee />
+      <Ticker />
+      <QuoteBand />
+      <KineticBand />
       <About />
+      <Services />
+      <Work />
     </main>
   );
 }
