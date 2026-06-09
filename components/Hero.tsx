@@ -140,7 +140,7 @@ export default function Hero() {
       {/* TOP CREDITS */}
       <motion.div
         style={{ opacity: overlayFade, x: credX }}
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-center p-7 font-mono text-[11px] uppercase tracking-[0.3em] text-bone/70 md:p-14"
+        className="pointer-events-none absolute inset-x-0 top-16 flex items-start justify-center px-7 font-mono text-[11px] uppercase tracking-[0.3em] text-bone/70 md:top-0 md:p-14"
       >
         <motion.span
           initial={{ opacity: 0, y: -8 }}

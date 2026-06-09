@@ -127,7 +127,6 @@ export default function Work() {
         className="mt-28 flex items-center justify-between border-t border-bone/10 pt-8 font-mono text-[11px] uppercase tracking-[0.3em] text-dust md:mt-40"
       >
         <span>Case studies in progress</span>
-        <span className="text-copper">becoming —</span>
       </motion.div>
     </section>
   );
