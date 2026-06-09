@@ -1,17 +1,38 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { Magnetic, Words } from "./Kit";
 
 // PLACEHOLDER — replace later. Portrait, textural studio/material detail.
 const ABOUT_IMG = "https://picsum.photos/seed/liminal-form/1400/1800?grayscale";
 
 const PAIRS = [
-  ["motion", "stillness"],
-  ["the brief", "the need"],
-  ["expected", "unimagined"],
-  ["finished", "becoming"],
+  [
+    "motion",
+    "stillness",
+    "https://picsum.photos/seed/liminal-p1/1200/300?grayscale",
+  ],
+  [
+    "the brief",
+    "the need",
+    "https://picsum.photos/seed/liminal-p2/1200/300?grayscale",
+  ],
+  [
+    "expected",
+    "unimagined",
+    "https://picsum.photos/seed/liminal-p3/1200/300?grayscale",
+  ],
+  [
+    "finished",
+    "becoming",
+    "https://picsum.photos/seed/liminal-p4/1200/300?grayscale",
+  ],
 ];
 
 const reveal = {
@@ -46,6 +67,12 @@ export default function About() {
     offset: ["start end", "end start"],
   });
   const imgY = useTransform(scrollYProgress, [0, 1], [50, -50]);
+  const [hoveredPair, setHoveredPair] = useState<number | null>(null);
+  const quoteRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: quoteProgress } = useScroll({
+    target: quoteRef,
+    offset: ["start 0.8", "end 0.6"],
+  });
 
   return (
     <section id="about" className="relative px-7 py-28 md:px-14 md:py-44">
@@ -109,15 +136,38 @@ export default function About() {
         transition={{ staggerChildren: 0.12 }}
         className="mt-32 font-display text-3xl font-light italic leading-tight text-bone md:mt-48 md:text-6xl"
       >
-        <Line>We exist in the space between</Line>
-        <Line className="pl-[10vw] text-dust">
-          the expected &amp; the unimagined —
-        </Line>
-        <Line>
-          where <span className="not-italic text-copper">nothing</span> is
-          finished,
-        </Line>
-        <Line className="pl-[6vw]">everything is becoming.</Line>
+        {[
+          "We exist in the space between",
+          "the expected & the unimagined —",
+          "where nothing is finished,",
+          "everything is becoming.",
+        ].map((line, li) => (
+          <Line
+            key={li}
+            className={
+              li === 1 ? "pl-[10vw] text-dust" : li === 3 ? "pl-[6vw]" : ""
+            }
+          >
+            {line.split(" ").map((word, wi) => {
+              const start = (li * 4 + wi) / 20;
+              const end = start + 0.08;
+              const opacity = useTransform(
+                quoteProgress,
+                [start, end],
+                [0.2, 1],
+              );
+              return (
+                <motion.span
+                  key={wi}
+                  style={{ opacity }}
+                  className="inline-block mr-[0.25em]"
+                >
+                  {word}
+                </motion.span>
+              );
+            })}
+          </Line>
+        ))}
       </motion.blockquote>
 
       {/* what we work between — magnetic rows w/ animated underline */}
@@ -126,7 +176,7 @@ export default function About() {
           What we work between
         </p>
         <div className="flex flex-col">
-          {PAIRS.map(([a, b], i) => (
+          {PAIRS.map(([a, b, img], i) => (
             <motion.div
               key={a}
               initial={{ opacity: 0, y: 30 }}
@@ -134,18 +184,27 @@ export default function About() {
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               data-cursor="hover"
+              onMouseEnter={() => setHoveredPair(i)}
+              onMouseLeave={() => setHoveredPair(null)}
               className={`group relative isolate flex w-full items-baseline overflow-hidden border-b border-bone/10 px-3 py-7 md:py-10 ${
                 i % 2 ? "justify-end text-right" : "justify-start"
               }`}
             >
-              {/* snappy background wipe on hover */}
-              <span
-                className={`pointer-events-none absolute inset-0 -z-10 scale-x-0 from-copper/15 via-ember/70 to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100 ${
-                  i % 2
-                    ? "origin-right bg-gradient-to-l"
-                    : "origin-left bg-gradient-to-r"
-                }`}
-              />
+              {/* image overlay — fades in like Services background */}
+              <AnimatePresence>
+                {hoveredPair === i && (
+                  <motion.span
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 -z-10 font-display text-[8rem] font-light text-bone/[0.04] select-none md:text-[12rem]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+
               <Magnetic
                 strength={0.18}
                 className="inline-flex items-baseline gap-4 font-display text-3xl font-light italic md:gap-8 md:text-5xl"
