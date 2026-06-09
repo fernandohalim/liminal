@@ -33,7 +33,7 @@ export default function KineticBand() {
         <motion.div
           className="flex w-max whitespace-nowrap font-display text-6xl font-light italic leading-none text-bone/90 md:text-[8rem]"
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ repeat: Infinity, ease: "linear", duration: 70 }}
+          transition={{ repeat: Infinity, ease: "linear", duration: 160 }}
         >
           <span>{run}</span>
           <span>{run}</span>
@@ -44,7 +44,7 @@ export default function KineticBand() {
           className="flex w-max whitespace-nowrap font-display text-6xl font-light italic leading-none text-transparent md:text-[8rem]"
           style={{ WebkitTextStroke: "1px rgba(240,235,227,0.3)" }}
           animate={{ x: ["-50%", "0%"] }}
-          transition={{ repeat: Infinity, ease: "linear", duration: 90 }}
+          transition={{ repeat: Infinity, ease: "linear", duration: 180 }}
         >
           <span>{run}</span>
           <span>{run}</span>

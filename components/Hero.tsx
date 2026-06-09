@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import {
   motion,
+  AnimatePresence,
   useMotionValue,
   useSpring,
   useScroll,
@@ -58,8 +59,69 @@ function Letter({
   );
 }
 
+type BurstData = { id: number; x: number; y: number };
+
+function Burst({ x, y, onDone }: { x: number; y: number; onDone: () => void }) {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 9 }, (_, i) => {
+        const angle = (i / 9) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = 55 + Math.random() * 55;
+        return { dx: Math.cos(angle) * dist, dy: Math.sin(angle) * dist };
+      }),
+    [],
+  );
+
+  return (
+    <div className="absolute" style={{ left: x, top: y }}>
+      {/* expanding copper ring */}
+      <motion.span
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-copper"
+        initial={{ width: 0, height: 0, opacity: 0.9 }}
+        animate={{ width: 240, height: 240, opacity: 0 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+        onAnimationComplete={onDone}
+      />
+      {/* faster inner ring */}
+      <motion.span
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-bone/40"
+        initial={{ width: 0, height: 0, opacity: 0.7 }}
+        animate={{ width: 120, height: 120, opacity: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
+      {/* particles */}
+      {particles.map((p, i) => (
+        <motion.span
+          key={i}
+          className="absolute h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-copper"
+          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+          animate={{ x: p.dx, y: p.dy, opacity: 0, scale: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
+
+  const [bursts, setBursts] = useState<BurstData[]>([]);
+  const [interacted, setInteracted] = useState(false);
+  const burstId = useRef(0);
+
+  const spawnBurst = (e: React.MouseEvent) => {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    const id = burstId.current++;
+    setBursts((b) => [
+      ...b.slice(-11),
+      { id, x: e.clientX - r.left, y: e.clientY - r.top },
+    ]);
+    setInteracted(true);
+  };
+  const removeBurst = (id: number) =>
+    setBursts((b) => b.filter((x) => x.id !== id));
 
   // pointer → springed normalized values
   const mvx = useMotionValue(0);
@@ -105,6 +167,7 @@ export default function Hero() {
       ref={ref}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
+      onClick={spawnBurst}
       className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden"
     >
       {/* BACKGROUND IMAGE — Ken Burns + parallax + duotone + light sweep */}
@@ -222,6 +285,37 @@ export default function Hero() {
           className="block h-8 w-px bg-gradient-to-b from-copper to-transparent"
         />
       </motion.div>
+
+      {/* INTERACTIVE CLICK BURSTS */}
+      <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
+        {bursts.map((b) => (
+          <Burst key={b.id} x={b.x} y={b.y} onDone={() => removeBurst(b.id)} />
+        ))}
+      </div>
+
+      {/* play hint — fades after first click */}
+      <AnimatePresence>
+        {!interacted && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.55 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 2.6, duration: 1.2 }}
+            className="pointer-events-none absolute bottom-6 left-1/2 z-20 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-copper"
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{
+                repeat: Infinity,
+                duration: 2.4,
+                ease: "easeInOut",
+              }}
+            >
+              ✶ click anywhere
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

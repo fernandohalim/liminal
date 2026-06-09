@@ -3,9 +3,10 @@
 import { useState } from "react";
 import {
   motion,
+  AnimatePresence,
   useMotionValue,
   useSpring,
-  AnimatePresence,
+  useTransform,
 } from "framer-motion";
 
 const SERVICES = [
@@ -14,134 +15,132 @@ const SERVICES = [
     name: "UI/UX",
     outcome: "Interfaces that feel inevitable.",
     desc: "Research, flows, and systems for products people actually trust.",
-    img: "https://picsum.photos/seed/liminal-uiux/900/1100?grayscale",
+    img: "https://picsum.photos/seed/liminal-uiux/1000/1250?grayscale",
   },
   {
     n: "02",
     name: "Web",
     outcome: "Sites that hold the room.",
     desc: "Designed and built — fast, tactile, unmistakably yours.",
-    img: "https://picsum.photos/seed/liminal-web/900/1100?grayscale",
+    img: "https://picsum.photos/seed/liminal-web/1000/1250?grayscale",
   },
   {
     n: "03",
     name: "Illustration",
     outcome: "A visual language of your own.",
     desc: "Marks, characters, and worlds that carry a brand.",
-    img: "https://picsum.photos/seed/liminal-illustration/900/1100?grayscale",
+    img: "https://picsum.photos/seed/liminal-illustration/1000/1250?grayscale",
   },
   {
     n: "04",
     name: "Motion",
     outcome: "Movement that means something.",
     desc: "Identity in motion — interfaces, brand films, micro-interactions.",
-    img: "https://picsum.photos/seed/liminal-motion/900/1100?grayscale",
+    img: "https://picsum.photos/seed/liminal-motion/1000/1250?grayscale",
   },
 ];
 
 export default function Services() {
-  const [active, setActive] = useState<number | null>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const px = useSpring(x, { stiffness: 150, damping: 20 });
-  const py = useSpring(y, { stiffness: 150, damping: 20 });
+  const [active, setActive] = useState(0);
+
+  const mvx = useMotionValue(0);
+  const mvy = useMotionValue(0);
+  const px = useSpring(mvx, { stiffness: 60, damping: 18 });
+  const py = useSpring(mvy, { stiffness: 60, damping: 18 });
+  const ix = useTransform(px, (v) => v * 40);
+  const iy = useTransform(py, (v) => v * 40);
 
   return (
     <section
       id="services"
       onMouseMove={(e) => {
-        x.set(e.clientX);
-        y.set(e.clientY);
+        const r = e.currentTarget.getBoundingClientRect();
+        mvx.set((e.clientX - r.left) / r.width - 0.5);
+        mvy.set((e.clientY - r.top) / r.height - 0.5);
       }}
-      onMouseLeave={() => setActive(null)}
-      className="relative isolate px-7 py-28 md:px-14 md:py-44"
+      className="relative flex min-h-screen flex-col justify-center px-7 py-8 md:px-14 md:py-10"
     >
-      {/* changing background — active service photo, blurred + washed */}
-      <AnimatePresence>
-        {active !== null && (
-          <motion.div
-            key={`bg-${active}`}
-            className="pointer-events-none absolute inset-0 -z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <img
-              src={SERVICES[active].img}
-              alt=""
-              className="h-full w-full scale-110 object-cover opacity-20 blur-2xl grayscale"
-            />
-            <div className="absolute inset-0 bg-copper/10 mix-blend-overlay" />
-            <div className="absolute inset-0 bg-void/45" />
-          </motion.div>
-        )}
-      </AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1 }}
-        className="mb-16 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.35em] text-dust md:mb-24"
+        className="mb-6 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.35em] text-dust md:mb-8"
       >
         <span className="text-copper">(III)</span>
         <span className="h-px w-16 bg-bone/20" />
         What we make
       </motion.div>
 
-      {/* cursor-following preview */}
-      <AnimatePresence>
-        {active !== null && (
-          <motion.div
-            key={active}
-            className="pointer-events-none fixed z-[70] hidden md:block"
-            style={{ left: px, top: py, x: "-50%", y: "-50%" }}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.85 }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="relative h-64 w-48 overflow-hidden lg:h-80 lg:w-60">
-              <img
-                src={SERVICES[active].img}
-                alt=""
-                className="h-full w-full object-cover grayscale"
-              />
-              <div className="absolute inset-0 bg-copper/20 mix-blend-overlay" />
-              <div className="absolute inset-0 bg-void/15" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="flex flex-col">
-        {SERVICES.map((s, i) => (
-          <motion.div
-            key={s.name}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            onMouseEnter={() => setActive(i)}
-            data-cursor="hover"
-            className="group flex flex-col gap-3 border-b border-bone/10 py-7 md:flex-row md:items-baseline md:gap-8 md:py-9"
-          >
-            <span className="font-mono text-[11px] tracking-[0.3em] text-dust md:w-16">
-              {s.n}
-            </span>
-            <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-baseline md:justify-between">
-              <h3 className="font-display text-5xl font-light italic text-bone transition-all duration-500 group-hover:translate-x-3 group-hover:text-copper md:text-7xl">
-                {s.name}
-              </h3>
-              <p className="max-w-xs font-mono text-[11px] uppercase leading-relaxed tracking-[0.2em] text-dust transition-colors duration-500 group-hover:text-bone/80">
+      <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-12">
+        {/* left — services + descriptions */}
+        <div className="flex flex-col md:col-span-7">
+          {SERVICES.map((s, i) => (
+            <motion.div
+              key={s.name}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              onMouseEnter={() => setActive(i)}
+              data-cursor="hover"
+              className="group border-b border-bone/10 py-4 md:py-6"
+            >
+              <div className="flex items-baseline gap-5">
+                <span
+                  className={`font-mono text-[11px] tracking-[0.3em] transition-colors duration-500 ${
+                    active === i ? "text-copper" : "text-dust"
+                  }`}
+                >
+                  {s.n}
+                </span>
+                <h3
+                  className={`font-display text-4xl font-light italic transition-all duration-500 group-hover:translate-x-2 md:text-6xl ${
+                    active === i ? "text-copper" : "text-bone"
+                  }`}
+                >
+                  {s.name}
+                </h3>
+              </div>
+              <p className="mt-3 max-w-md pl-[2.4rem] font-mono text-[11px] uppercase leading-relaxed tracking-[0.18em] text-dust">
                 {s.outcome}
                 <span className="mt-1 block normal-case tracking-normal text-dust/70">
                   {s.desc}
                 </span>
               </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* right — fixed parallax image */}
+        <div className="hidden md:col-span-5 md:block">
+          <div className="sticky top-28">
+            <div className="relative h-[80vh] w-full overflow-hidden bg-ashen">
+              <AnimatePresence>
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ x: ix, y: iy, scale: 1.1 }}
+                  className="absolute inset-0"
+                >
+                  <img
+                    src={SERVICES[active].img}
+                    alt=""
+                    className="h-full w-full object-cover grayscale"
+                  />
+                </motion.div>
+              </AnimatePresence>
+              <div className="pointer-events-none absolute inset-0 bg-copper/15 mix-blend-overlay" />
+              <div className="pointer-events-none absolute inset-0 bg-void/20" />
+              <span className="absolute bottom-3 left-3 font-mono text-[10px] uppercase tracking-[0.3em] text-bone/80">
+                {SERVICES[active].n} — {SERVICES[active].name}
+              </span>
             </div>
-          </motion.div>
-        ))}
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -24,18 +24,39 @@ export default function Nav() {
 
         <div className="hidden items-center gap-10 font-mono text-[11px] uppercase tracking-[0.3em] text-bone md:flex">
           <Magnetic strength={0.4} className="inline-block">
-            <a href="#about" className="block transition-colors hover:text-copper">
-              About
-            </a>
-          </Magnetic>
-          <span className="text-bone/30">Work — soon</span>
-          <Magnetic strength={0.4} className="inline-block">
             <a
               href="#about"
               data-cursor="hover"
               className="block transition-colors hover:text-copper"
             >
-              Contact →
+              About
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.4} className="inline-block">
+            <a
+              href="#services"
+              data-cursor="hover"
+              className="block transition-colors hover:text-copper"
+            >
+              Services
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.4} className="inline-block">
+            <a
+              href="#work"
+              data-cursor="hover"
+              className="block transition-colors hover:text-copper"
+            >
+              Work
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.4} className="inline-block">
+            <a
+              href="#contact"
+              data-cursor="hover"
+              className="block transition-colors hover:text-copper"
+            >
+              Contact &rarr;
             </a>
           </Magnetic>
         </div>

@@ -29,7 +29,7 @@ export default function Ticker() {
         style={{ skewX: skew }}
         className="flex w-max whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.4em] text-dust"
         animate={{ x: ["0%", "-50%"] }}
-        transition={{ repeat: Infinity, ease: "linear", duration: 45 }}
+        transition={{ repeat: Infinity, ease: "linear", duration: 450 }}
       >
         <span>{run}</span>
         <span>{run}</span>
