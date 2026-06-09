@@ -86,7 +86,7 @@ export default function Hero() {
   const titleBlur = useTransform(
     scrollYProgress,
     [0, 0.8],
-    ["blur(0px)", "blur(7px)"]
+    ["blur(0px)", "blur(7px)"],
   );
 
   const onMove = (e: React.MouseEvent) => {
@@ -140,24 +140,17 @@ export default function Hero() {
       {/* TOP CREDITS */}
       <motion.div
         style={{ opacity: overlayFade, x: credX }}
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-7 font-mono text-[11px] uppercase tracking-[0.3em] text-bone/70 md:p-14"
+        className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-center p-7 font-mono text-[11px] uppercase tracking-[0.3em] text-bone/70 md:p-14"
       >
         <motion.span
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 1 }}
+          className="flex items-center gap-4 leading-relaxed"
         >
           Design studio
-        </motion.span>
-        <motion.span
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 1 }}
-          className="text-right leading-relaxed"
-        >
-          Est. MMXXVI
-          <br />
-          <span className="text-bone/40">the in-between</span>
+          <span className="text-bone/25">·</span>
+          <span>Est. MMXXVI</span>
         </motion.span>
       </motion.div>
 
