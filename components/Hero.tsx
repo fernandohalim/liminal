@@ -136,6 +136,9 @@ export default function Hero() {
   const credX = useTransform(px, (v) => v * -22);
   const imgPX = useTransform(px, (v) => v * -16);
 
+  const gridX = useTransform(px, (v) => v * -10);
+  const gridY = useTransform(py, (v) => v * -10);
+
   // scroll
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -196,6 +199,26 @@ export default function Hero() {
             duration: 7,
             ease: "easeInOut",
             repeatDelay: 5,
+          }}
+        />
+      </motion.div>
+
+      {/* SUBTLE THRESHOLD GRID — architectural "liminal space" motif */}
+      <motion.div
+        aria-hidden
+        style={{ x: gridX, y: gridY }}
+        className="pointer-events-none absolute inset-0 opacity-60"
+      >
+        <div
+          className="absolute inset-[-8%]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(240,235,227,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(240,235,227,0.06) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+            maskImage:
+              "radial-gradient(circle at 50% 45%, rgba(0,0,0,0.9), transparent 72%)",
+            WebkitMaskImage:
+              "radial-gradient(circle at 50% 45%, rgba(0,0,0,0.9), transparent 72%)",
           }}
         />
       </motion.div>
